@@ -4,7 +4,7 @@ import MySQLdb as m
 import time,string
 
 config = [                                          \
-            {'host':'192.168.8.241','user':'root','passwd':'root#local','dbname':'register','prefix':'register'},      \
+            {'host':'192.168.0.21,'user':'root','passwd':'123456',dbname':'dede','prefix':'dede'},      \
                                                     \
         ]
 curtime = int(str(time.time()).split('.')[0])
