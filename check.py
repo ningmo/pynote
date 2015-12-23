@@ -175,7 +175,7 @@ def warming(msg):
 # 发送警告
 def sendWarming():
     print '||'.join(warningMsg)
-    url = 'http://114.255.71.158:8061/?username=xrzg&password=xrzg&message=%s&phone=%s&epid=120188&linkid=&subcode=' % ('||'.join(warningMsg), '13716388217')
+    url = 'http://114.255.71.158:8061/?username=username&password=username&message=%s&phone=%s&epid=120188&linkid=&subcode=' % ('||'.join(warningMsg), '13522222222')
     print requests.get(url).content
 
 # 返回当前时间

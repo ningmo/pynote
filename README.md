@@ -1,4 +1,4 @@
 pynote
 ======
 
-python笔记
+python 工具小脚本
