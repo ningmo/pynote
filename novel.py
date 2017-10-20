@@ -5,8 +5,6 @@ from pyquery import PyQuery as pq
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
-import cgi
-
 
 def main():
     base = 'http://www.dhzw.org/'
@@ -14,24 +12,25 @@ def main():
     listObj = listObj('.l ul li .s2 a').items()
     for a in listObj:
         novleHref = a.attr('href')
-        novleName = a.text().encode('iso-8859-1').decode('gbk').encode("utf8")
+        novleName = a.text()
         arcListObj = pq(url=novleHref)
-        author = arcListObj('.infotitle i').eq(0).text().encode('iso-8859-1').decode('gbk').encode("utf8")
+        author = arcListObj('.infotitle i').eq(0).text()
         arcArea = arcListObj('.box_con #list dd a').items()
-        desc = arcListObj('.intro').text().encode('iso-8859-1').decode('gbk').encode("utf8")
-        sql = 'insert into nv_novel_list set title="%s",author="%s",cat_id="%s",desc="%s";' % (novleName,author,'1',cgi.escape(desc))
+        desc = arcListObj('.intro').text()
+        sql = 'insert into nv_novel_list set title="%s",author="%s",cat_id="%s",`desc`="%s";' % (iconv(novleName),iconv(author),'1',MySQLdb.escape_string(iconv(desc)))
         id = insert(sql,True)
-        print id,novleName
+        print id,iconv(novleName)
         for aa in arcArea:
-            arcHref = base + aa.attr('href')
-            arcName = aa.text().encode('iso-8859-1').decode('gbk').encode("utf8")
-            conObj = pq(url = arcHref)
-            con = conObj('#BookText').text().encode('iso-8859-1').decode('gbk').encode("utf8")
-            print arcName.encode('iso-8859-1').decode('gbk')
-            sql = 'insert into nv_novel_article set title="%s",content="%s",novel_id="%s";' % (arcName, MySQLdb.escape_string(con), '1')
-            print sql
-            insert(sql)
-
+            arcHref = novleHref + aa.attr('href')
+            arcName = aa.text()
+            try:
+                print '     ',iconv(arcName),arcHref
+                conObj = pq(url = arcHref)
+                con = conObj('#BookText').text()
+                sql = 'insert into nv_novel_article set title="%s",content="%s",novel_id="%s";' % (iconv(arcName), MySQLdb.escape_string(iconv(con)), id)
+                insert(sql)
+            except UnicodeDecodeError:
+                pass
 
 def insert(sql,id=False):
     db = MySQLdb.connect(host='127.0.0.1', user='root', passwd='123456', db='novel',charset="utf8")
@@ -41,6 +40,9 @@ def insert(sql,id=False):
     if id:
         cursor.execute('select novel_id from nv_novel_list order by novel_id desc')
         data = cursor.fetchone()
-        return data['novel_id']
+        return data[0]
+
+def iconv(str):
+    return str.encode('iso-8859-1').decode('gbk').encode('utf-8')
 
 main()
